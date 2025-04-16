@@ -1,0 +1,1179 @@
+Generator zadań historycznych: poprawki i ulepszenia
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator zadań historycznych</title>
+    <style>
+        :root {
+            --primary-color: #34495e;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --admin-color: #9b59b6;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .auth-buttons {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .user-info {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+        
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .admin-badge {
+            background-color: var(--admin-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        
+        .subtitle {
+            font-style: italic;
+            opacity: 0.9;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+        }
+        
+        .control-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        
+        select, input, button, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-top: 5px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-danger {
+            background-color: var(--accent-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-admin {
+            background-color: var(--admin-color);
+        }
+        
+        .btn-admin:hover {
+            background-color: #8e44ad;
+        }
+        
+        .tasks-container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .period-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .task-list {
+            counter-reset: task-counter;
+            margin-bottom: 30px;
+        }
+        
+        .task {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: 4px;
+            position: relative;
+            padding-left: 60px;
+            break-inside: avoid;
+        }
+        
+        .task::before {
+            counter-increment: task-counter;
+            content: counter(task-counter);
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .task-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .task-actions button {
+            flex: 1;
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #d5edfa;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .export-options {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .checkbox-group {
+            margin: 15px 0;
+        }
+        
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        
+        .checkbox-group input {
+            width: auto;
+            margin-right: 10px;
+        }
+        
+        .difficulty-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .easy {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .medium {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .hard {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .period-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            background-color: #9b59b6;
+            color: white;
+            margin-left: 10px;
+        }
+        
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .login-form h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+        
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .saved-tasks {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .saved-task-item {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+            cursor: pointer;
+        }
+        
+        .saved-task-item:hover {
+            background-color: #e8e9ea;
+        }
+        
+        .delete-saved {
+            color: var(--accent-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .admin-panel {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .users-list {
+            margin-top: 15px;
+        }
+        
+        .user-item {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-email {
+            font-weight: bold;
+        }
+        
+        .user-date {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        #custom-topic-input {
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Generator zadań historycznych</h1>
+        <div class="subtitle">Narzędzie dla nauczycieli historii</div>
+        
+        <div id="auth-buttons" class="auth-buttons">
+            <button id="login-btn" class="btn-admin">Zaloguj się</button>
+            <button id="register-btn" class="btn-admin">Zarejestruj</button>
+        </div>
+        
+        <div id="user-info" class="user-info hidden">
+            <div class="user-avatar" id="user-avatar">U</div>
+            <span id="username-display">Użytkownik</span>
+            <span id="admin-badge" class="admin-badge hidden">Admin</span>
+            <button id="logout-btn" class="btn-danger">Wyloguj</button>
+        </div>
+    </header>
+    
+    <div class="login-modal" id="login-modal">
+        <div class="login-form">
+            <h2 id="modal-title">Logowanie</h2>
+            <div class="form-group">
+                <label for="login-email">Email:</label>
+                <input type="email" id="login-email" placeholder="Twój email">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Hasło:</label>
+                <input type="password" id="login-password" placeholder="Twoje hasło">
+            </div>
+            <button id="modal-submit" class="btn-admin">Zaloguj się</button>
+            <div class="form-footer">
+                <a href="#" id="switch-to-register">Nie masz konta? Zarejestruj się</a>
+                <a href="#" id="switch-to-login" class="hidden">Masz już konto? Zaloguj się</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="control-panel">
+            <div class="tabs">
+                <div class="tab active" data-tab="single">Pojedyncze zadania</div>
+                <div class="tab" data-tab="saved" id="saved-tab">Zapisane</div>
+                <div class="tab" data-tab="admin" id="admin-tab">Admin</div>
+            </div>
+            
+            <div id="single-tab" class="tab-content active">
+                <div class="form-group">
+                    <label for="period">Okres historyczny:</label>
+                    <select id="period">
+                        <option value="ancient">Starożytność</option>
+                        <option value="middleages" selected>Średniowiecze</option>
+                        <option value="renaissance">Renesans</option>
+                        <option value="modern">Czasy nowożytne</option>
+                        <option value="contemporary">Współczesność</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="topic">Tematyka:</label>
+                    <select id="topic">
+                        <option value="events">Wydarzenia</option>
+                        <option value="dates" selected>Daty</option>
+                        <option value="figures">Postacie</option>
+                        <option value="terms">Pojęcia</option>
+                        <option value="custom">Własna tematyka</option>
+                    </select>
+                    <input type="text" id="custom-topic-input" placeholder="Wpisz własną tematykę (np. II wojna światowa, rewolucja przemysłowa)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="level">Poziom trudności:</label>
+                    <select id="level">
+                        <option value="easy">Podstawowy</option>
+                        <option value="medium" selected>Średni</option>
+                        <option value="hard">Zaawansowany</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="count">Liczba zadań:</label>
+                    <input type="number" id="count" min="1" max="30" value="10">
+                </div>
+                
+                <button id="generate">Generuj zadania</button>
+                <button id="save-task-set" class="btn-admin hidden">Zapisz zestaw</button>
+                <button id="reset" class="btn-danger">Wyczyść</button>
+            </div>
+            
+            <div id="saved-tab-content" class="tab-content">
+                <div class="saved-tasks" id="saved-tasks">
+                    <p>Zaloguj się, aby wyświetlić zapisane zestawy zadań</p>
+                </div>
+            </div>
+            
+            <div id="admin-tab-content" class="tab-content">
+                <div class="admin-panel">
+                    <h3>Panel administratora</h3>
+                    <p id="admin-access-info">Dostęp tylko dla administratora</p>
+                    
+                    <div id="admin-content" class="hidden">
+                        <h4>Zarejestrowani użytkownicy</h4>
+                        <div class="users-list" id="users-list">
+                            <p>Ładowanie listy użytkowników...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="export-options">
+                <h3>Opcje eksportu</h3>
+                
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="show-answers" checked>
+                        Pokaż odpowiedzi
+                    </label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="show-difficulty">
+                        Pokaż poziom trudności
+                    </label>
+                </div>
+                
+                <button id="print" class="no-print">Drukuj zadania</button>
+                <button id="export-pdf" class="no-print">Eksportuj do PDF</button>
+            </div>
+        </div>
+        
+        <div class="tasks-container">
+            <div class="tasks-header">
+                <h2>Wygenerowane zadania</h2>
+                <div id="task-info"></div>
+            </div>
+            
+            <div id="loading" class="loading hidden">
+                <p>Trwa generowanie zadań...</p>
+                <div class="spinner"></div>
+            </div>
+            
+            <div id="tasks-output"></div>
+        </div>
+    </div>
+
+    <script>
+        // Dane aplikacji
+        const appState = {
+            currentTasks: [],
+            savedTasks: {},
+            currentUser: null,
+            isLoggedIn: false,
+            isAdmin: false,
+            allUsers: []
+        };
+        
+        // Rozszerzona baza danych zadań historycznych
+        const historyTasks = {
+            ancient: {
+                events: [
+                    { question: "W którym roku wybuchła wojna trojańska?", answer: "XIII/XII w. p.n.e.", level: "hard" },
+                    { question: "Kto był pierwszym cesarzem rzymskim?", answer: "August", level: "easy" }
+                ],
+                dates: [
+                    { question: "776 p.n.e. to data:", answer: "Pierwszych igrzysk olimpijskich", level: "medium" },
+                    { question: "44 p.n.e. to rok:", answer: "Zamordowania Juliusza Cezara", level: "easy" }
+                ],
+                figures: [
+                    { question: "Król Sparty znany z bitwy pod Termopilami:", answer: "Leonidas", level: "easy" },
+                    { question: "Filozof, nauczyciel Aleksandra Wielkiego:", answer: "Arystoteles", level: "medium" }
+                ],
+                terms: [
+                    { question: "Co to jest demokracja ateńska?", answer: "System polityczny w starożytnych Atenach", level: "medium" },
+                    { question: "Definicja polis:", answer: "Miasto-państwo w starożytnej Grecji", level: "easy" }
+                ],
+                custom: []
+            },
+            middleages: {
+                events: [
+                    { question: "W którym roku odbył się chrzest Polski?", answer: "966", level: "easy" },
+                    { question: "Data bitwy pod Grunwaldem:", answer: "1410", level: "easy" }
+                ],
+                dates: [
+                    { question: "1096-1291 to okres:", answer: "Wypraw krzyżowych", level: "hard" },
+                    { question: "1453 to rok:", answer: "Upadku Konstantynopola", level: "medium" }
+                ],
+                figures: [
+                    { question: "Założyciel państwa Franków:", answer: "Chlodwig", level: "hard" },
+                    { question: "Król Polski który przyjął chrzest:", answer: "Mieszko I", level: "easy" }
+                ],
+                terms: [
+                    { question: "Co to był system feudalny?", answer: "System społeczno-polityczny średniowiecza", level: "medium" },
+                    { question: "Definicja hanzy:", answer: "Związku miast handlowych", level: "hard" }
+                ],
+                custom: []
+            },
+            renaissance: {
+                events: [
+                    { question: "W którym roku Kolumb odkrył Amerykę?", answer: "1492", level: "easy" },
+                    { question: "Data wystąpienia Lutra:", answer: "1517", level: "medium" }
+                ],
+                dates: [
+                    { question: "1450 to wynalezienie:", answer: "Druku przez Gutenberga", level: "medium" },
+                    { question: "1569 to rok:", answer: "Unii lubelskiej", level: "easy" }
+                ],
+                figures: [
+                    { question: "Mona Lisa to dzieło:", answer: "Leonardo da Vinci", level: "easy" },
+                    { question: "Polski astronom który wstrzymał Słońce:", answer: "Mikołaj Kopernik", level: "easy" }
+                ],
+                terms: [
+                    { question: "Co to był humanizm?", answer: "Prąd umysłowy renesansu", level: "medium" },
+                    { question: "Definicja mecenatu:", answer: "Opieka nad artystami", level: "hard" }
+                ],
+                custom: []
+            },
+            modern: {
+                events: [
+                    { question: "W którym roku wybuchła rewolucja francuska?", answer: "1789", level: "easy" },
+                    { question: "Data rozbiorów Polski:", answer: "1772, 1793, 1795", level: "medium" }
+                ],
+                dates: [
+                    { question: "1914-1918 to okres:", answer: "I wojny światowej", level: "easy" },
+                    { question: "1863 to rok:", answer: "Powstania styczniowego", level: "medium" }
+                ],
+                figures: [
+                    { question: "Cesarz Francuzów po rewolucji:", answer: "Napoleon Bonaparte", level: "easy" },
+                    { question: "Polski pianista i polityk:", answer: "Ignacy Jan Paderewski", level: "hard" }
+                ],
+                terms: [
+                    { question: "Co to była Wiosna Ludów?", answer: "Ruchy rewolucyjne w Europie 1848-49", level: "hard" },
+                    { question: "Definicja industrializacji:", answer: "Proces uprzemysłowienia", level: "medium" }
+                ],
+                custom: []
+            },
+            contemporary: {
+                events: [
+                    { question: "W którym roku wybuchła II wojna światowa?", answer: "1939", level: "easy" },
+                    { question: "Data upadku muru berlińskiego:", answer: "1989", level: "medium" }
+                ],
+                dates: [
+                    { question: "1945-1989 to okres:", answer: "Zimnej wojny", level: "medium" },
+                    { question: "2001 to rok:", answer: "Ataku na World Trade Center", level: "hard" }
+                ],
+                figures: [
+                    { question: "Pierwszy człowiek w kosmosie:", answer: "Jurij Gagarin", level: "easy" },
+                    { question: "Pierwszy prezydent III RP:", answer: "Wojciech Jaruzelski", level: "hard" }
+                ],
+                terms: [
+                    { question: "Co to był plan Marshalla?", answer: "Program pomocy dla Europy po II WŚ", level: "hard" },
+                    { question: "Definicja globalizacji:", answer: "Proces integracji światowej", level: "medium" }
+                ],
+                custom: []
+            }
+        };
+
+        // Inicjalizacja
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sprawdź czy użytkownik jest zalogowany
+            checkLoginStatus();
+            
+            // Obsługa wyboru własnej tematyki
+            document.getElementById('topic').addEventListener('change', function() {
+                const customInput = document.getElementById('custom-topic-input');
+                customInput.style.display = this.value === 'custom' ? 'block' : 'none';
+            });
+            
+            // Tab system
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(`${this.dataset.tab}-tab`).classList.add('active');
+                    
+                    // Specjalne akcje dla zakładek
+                    if (this.dataset.tab === 'saved' && appState.isLoggedIn) {
+                        loadSavedTasks();
+                    } else if (this.dataset.tab === 'admin') {
+                        checkAdminAccess();
+                    }
+                });
+            });
+            
+            // Logowanie/rejestracja
+            document.getElementById('login-btn').addEventListener('click', showLoginModal);
+            document.getElementById('register-btn').addEventListener('click', showRegisterModal);
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            document.getElementById('modal-submit').addEventListener('click', handleAuth);
+            document.getElementById('switch-to-register').addEventListener('click', showRegisterModal);
+            document.getElementById('switch-to-login').addEventListener('click', showLoginModal);
+            
+            // Generowanie zadań
+            document.getElementById('generate').addEventListener('click', generateTasks);
+            document.getElementById('reset').addEventListener('click', resetTasks);
+            document.getElementById('save-task-set').addEventListener('click', saveTaskSet);
+            
+            // Eksport
+            document.getElementById('print').addEventListener('click', printTasks);
+            document.getElementById('export-pdf').addEventListener('click', exportToPDF);
+            
+            // Opcje wyświetlania
+            document.getElementById('show-answers').addEventListener('change', toggleAnswers);
+            document.getElementById('show-difficulty').addEventListener('change', toggleDifficulty);
+        });
+        
+        // Funkcje autentykacji
+        function checkLoginStatus() {
+            const loggedIn = localStorage.getItem('historyGeneratorLoggedIn') === 'true';
+            const userData = JSON.parse(localStorage.getItem('historyGeneratorUser'));
+            
+            if (loggedIn && userData) {
+                loginUser(userData);
+            }
+        }
+        
+        function showLoginModal() {
+            document.getElementById('modal-title').textContent = 'Logowanie';
+            document.getElementById('modal-submit').textContent = 'Zaloguj się';
+            document.getElementById('switch-to-register').classList.remove('hidden');
+            document.getElementById('switch-to-login').classList.add('hidden');
+            document.getElementById('login-modal').style.display = 'flex';
+        }
+        
+        function showRegisterModal(e) {
+            if (e) e.preventDefault();
+            document.getElementById('modal-title').textContent = 'Rejestracja';
+            document.getElementById('modal-submit').textContent = 'Zarejestruj się';
+            document.getElementById('switch-to-register').classList.add('hidden');
+            document.getElementById('switch-to-login').classList.remove('hidden');
+            document.getElementById('login-modal').style.display = 'flex';
+        }
+        
+        function handleAuth() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const isLogin = document.getElementById('modal-title').textContent === 'Logowanie';
+            
+            if (!email || !password) {
+                alert('Proszę wypełnić wszystkie pola!');
+                return;
+            }
+            
+            if (isLogin) {
+                const userData = {
+                    email,
+                    name: email.split('@')[0],
+                    avatar: email.charAt(0).toUpperCase(),
+                    isAdmin: email.endsWith('@admin.edu')
+                };
+                
+                loginUser(userData);
+                alert('Zalogowano pomyślnie!');
+            } else {
+                const userData = {
+                    email,
+                    name: email.split('@')[0],
+                    avatar: email.charAt(0).toUpperCase(),
+                    isAdmin: false,
+                    registrationDate: new Date().toISOString()
+                };
+                
+                const allUsers = JSON.parse(localStorage.getItem('historyGeneratorAllUsers') || '[]');
+                allUsers.push(userData);
+                localStorage.setItem('historyGeneratorAllUsers', JSON.stringify(allUsers));
+                
+                localStorage.setItem('historyGeneratorUser', JSON.stringify(userData));
+                localStorage.setItem('historyGeneratorLoggedIn', 'true');
+                
+                loginUser(userData);
+                alert('Konto zostało utworzone! Zalogowano automatycznie.');
+            }
+            
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+        }
+        
+        function loginUser(userData) {
+            appState.currentUser = userData;
+            appState.isLoggedIn = true;
+            appState.isAdmin = userData.isAdmin || false;
+            
+            document.getElementById('auth-buttons').classList.add('hidden');
+            document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('username-display').textContent = userData.name;
+            document.getElementById('user-avatar').textContent = userData.avatar;
+            
+            if (appState.isAdmin) {
+                document.getElementById('admin-badge').classList.remove('hidden');
+            }
+            
+            document.getElementById('save-task-set').classList.remove('hidden');
+            document.getElementById('saved-tab').classList.remove('hidden');
+            
+            if (document.querySelector('.tab.active').dataset.tab === 'saved') {
+                loadSavedTasks();
+            }
+        }
+        
+        function logout() {
+            appState.currentUser = null;
+            appState.isLoggedIn = false;
+            appState.isAdmin = false;
+            
+            document.getElementById('auth-buttons').classList.remove('hidden');
+            document.getElementById('user-info').classList.add('hidden');
+            document.getElementById('admin-badge').classList.add('hidden');
+            document.getElementById('save-task-set').classList.add('hidden');
+            document.getElementById('saved-tab').classList.add('hidden');
+            
+            localStorage.removeItem('historyGeneratorLoggedIn');
+            localStorage.removeItem('historyGeneratorUser');
+            
+            if (document.querySelector('.tab.active').dataset.tab === 'saved') {
+                document.getElementById('saved-tasks').innerHTML = '<p>Zaloguj się, aby wyświetlić zapisane zestawy zadań</p>';
+            }
+        }
+        
+        // Funkcje administratora
+        function checkAdminAccess() {
+            if (appState.isAdmin) {
+                document.getElementById('admin-content').classList.remove('hidden');
+                document.getElementById('admin-access-info').classList.add('hidden');
+                loadUsersList();
+            } else {
+                document.getElementById('admin-content').classList.add('hidden');
+                document.getElementById('admin-access-info').classList.remove('hidden');
+            }
+        }
+        
+        function loadUsersList() {
+            const usersList = document.getElementById('users-list');
+            usersList.innerHTML = '<p>Ładowanie listy użytkowników...</p>';
+            
+            setTimeout(() => {
+                const allUsers = JSON.parse(localStorage.getItem('historyGeneratorAllUsers') || '[]');
+                
+                if (allUsers.length === 0) {
+                    usersList.innerHTML = '<p>Brak zarejestrowanych użytkowników</p>';
+                    return;
+                }
+                
+                usersList.innerHTML = '';
+                
+                allUsers.forEach(user => {
+                    const userItem = document.createElement('div');
+                    userItem.className = 'user-item';
+                    userItem.innerHTML = `
+                        <div>
+                            <div class="user-email">${user.email} ${user.isAdmin ? '<span class="admin-badge">Admin</span>' : ''}</div>
+                            <div class="user-date">Zarejestrowany: ${new Date(user.registrationDate).toLocaleDateString()}</div>
+                        </div>
+                    `;
+                    usersList.appendChild(userItem);
+                });
+            }, 500);
+        }
+        
+        // Funkcje do zapisywania zadań
+        function saveTaskSet() {
+            if (appState.currentTasks.length === 0) {
+                alert('Najpierw wygeneruj zadania!');
+                return;
+            }
+            
+            const taskName = prompt('Podaj nazwę zestawu zadań:');
+            if (!taskName) return;
+            
+            const savedTasks = JSON.parse(localStorage.getItem('historyGeneratorSavedTasks') || '{}');
+            const userId = appState.currentUser.email;
+            
+            if (!savedTasks[userId]) {
+                savedTasks[userId] = [];
+            }
+            
+            savedTasks[userId].push({
+                id: Date.now(),
+                name: taskName,
+                date: new Date().toLocaleString(),
+                tasks: appState.currentTasks
+            });
+            
+            localStorage.setItem('historyGeneratorSavedTasks', JSON.stringify(savedTasks));
+            alert('Zestaw zadań został zapisany!');
+            
+            if (document.querySelector('.tab.active').dataset.tab === 'saved') {
+                loadSavedTasks();
+            }
+        }
+        
+        function loadSavedTasks() {
+            const savedTasksContainer = document.getElementById('saved-tasks');
+            savedTasksContainer.innerHTML = '<p>Ładowanie zapisanych zadań...</p>';
+            
+            setTimeout(() => {
+                const savedTasks = JSON.parse(localStorage.getItem('historyGeneratorSavedTasks') || '{}');
+                const userId = appState.currentUser.email;
+                const userTasks = savedTasks[userId] || [];
+                
+                if (userTasks.length === 0) {
+                    savedTasksContainer.innerHTML = '<p>Brak zapisanych zestawów zadań</p>';
+                    return;
+                }
+                
+                savedTasksContainer.innerHTML = '';
+                
+                userTasks.forEach(taskSet => {
+                    const taskItem = document.createElement('div');
+                    taskItem.className = 'saved-task-item';
+                    taskItem.innerHTML = `
+                        <strong>${taskSet.name}</strong>
+                        <small>${taskSet.date}</small>
+                        <p>${taskSet.tasks.length} zadań</p>
+                        <button class="delete-saved" data-id="${taskSet.id}">Usuń</button>
+                    `;
+                    
+                    taskItem.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('delete-saved')) {
+                            appState.currentTasks = taskSet.tasks;
+                            displayTasks(taskSet.tasks);
+                            document.querySelector('.tab[data-tab="single"]').click();
+                        }
+                    });
+                    
+                    taskItem.querySelector('.delete-saved').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (confirm('Czy na pewno chcesz usunąć ten zestaw zadań?')) {
+                            deleteSavedTask(taskSet.id);
+                        }
+                    });
+                    
+                    savedTasksContainer.appendChild(taskItem);
+                });
+            }, 500);
+        }
+        
+        function deleteSavedTask(taskId) {
+            const savedTasks = JSON.parse(localStorage.getItem('historyGeneratorSavedTasks') || '{}');
+            const userId = appState.currentUser.email;
+            
+            if (savedTasks[userId]) {
+                savedTasks[userId] = savedTasks[userId].filter(task => task.id !== taskId);
+                localStorage.setItem('historyGeneratorSavedTasks', JSON.stringify(savedTasks));
+                loadSavedTasks();
+            }
+        }
+
+        // Funkcje do generowania zadań
+        function generateTasks() {
+            const period = document.getElementById('period').value;
+            const topic = document.getElementById('topic').value;
+            const level = document.getElementById('level').value;
+            const count = parseInt(document.getElementById('count').value);
+            const customTopic = document.getElementById('custom-topic-input').value.trim();
+            
+            if (topic === 'custom' && !customTopic) {
+                alert('Proszę wpisać własną tematykę!');
+                return;
+            }
+            
+            showLoading();
+            
+            setTimeout(() => {
+                let tasks = [];
+                
+                if (topic === 'custom') {
+                    // Generuj zadania dla własnej tematyki
+                    tasks = generateCustomTasks(period, customTopic, count, level);
+                } else {
+                    // Standardowe generowanie zadań
+                    const availableTasks = historyTasks[period][topic];
+                    let filteredTasks = availableTasks.filter(task => task.level === level);
+                    
+                    if (filteredTasks.length < count) {
+                        const remaining = count - filteredTasks.length;
+                        const otherTasks = availableTasks.filter(task => task.level !== level)
+                                                     .sort(() => 0.5 - Math.random())
+                                                     .slice(0, remaining);
+                        filteredTasks = [...filteredTasks, ...otherTasks];
+                    }
+                    
+                    tasks = filteredTasks.sort(() => 0.5 - Math.random()).slice(0, count);
+                }
+                
+                appState.currentTasks = [{
+                    name: topic === 'custom' ? `Zadania: ${customTopic}` : "Zadania historyczne",
+                    tasks: tasks.map(task => ({
+                        text: task.question,
+                        answer: task.answer,
+                        level: task.level,
+                        topic: topic === 'custom' ? customTopic : topic,
+                        period: period
+                    }))
+                }];
+                
+                displayTasks(appState.currentTasks);
+                hideLoading();
+            }, 800);
+        }
+
+        function generateCustomTasks(period, customTopic, count, level) {
+            // Przykładowe szablony pytań dla różnych poziomów trudności
+            const easyQuestions = [
+                `Podaj datę związaną z ${customTopic}`,
+                `Wymień ważną postać związaną z ${customTopic}`,
+                `Jakie jest najważniejsze wydarzenie związane z ${customTopic}?`,
+                `Gdzie miały miejsce główne wydarzenia ${customTopic}?`
+            ];
+            
+            const mediumQuestions = [
+                `Opisz krótko znaczenie ${customTopic}`,
+                `Jakie były przyczyny ${customTopic}?`,
+                `Jakie były konsekwencje ${customTopic}?`,
+                `Wymień trzy ważne fakty dotyczące ${customTopic}`
+            ];
+            
+            const hardQuestions = [
+                `Przeanalizuj wpływ ${customTopic} na późniejsze wydarzenia historyczne`,
+                `Porównaj ${customTopic} z podobnym wydarzeniem z innego okresu`,
+                `Wyjaśnij długoterminowe skutki ${customTopic}`,
+                `Przedstaw argumenty za i przeciw dotyczące ${customTopic}`
+            ];
+            
+            // Wybierz odpowiednie pytania w zależności od poziomu trudności
+            let selectedQuestions = [];
+            if (level === 'easy') selectedQuestions = easyQuestions;
+            else if (level === 'medium') selectedQuestions = [...easyQuestions, ...mediumQuestions];
+            else selectedQuestions = [...mediumQuestions, ...hardQuestions];
+            
+            // Generuj zadania
+            const tasks = [];
+            for (let i = 0; i < count; i++) {
+                const randomIndex = Math.floor(Math.random() * selectedQuestions.length);
+                const question = selectedQuestions[randomIndex];
+                
+                tasks.push({
+                    question: question,
+                    answer: `Przykładowa odpowiedź dotycząca ${customTopic}`,
+                    level: level
+                });
+            }
+            
+            return tasks;
+        }
+
+        // Funkcje wyświetlania i pomocnicze
+        function displayTasks(groups) {
+            const output = document.getElementById('tasks-output');
+            output.innerHTML = '';
+            
+            document.getElementById('task-info').textContent = `Łącznie zadań: ${groups.reduce((sum, group) => sum + group.tasks.length, 0)}`;
+            
+            groups.forEach(group => {
+                const groupSection = document.createElement('div');
+                
+                const groupHeader = document.createElement('div');
+                groupHeader.className = 'period-header';
+                groupHeader.innerHTML = `
+                    <h3>${group.name}</h3>
+                    <small>${group.tasks.length} zadań</small>
+                `;
+                groupSection.appendChild(groupHeader);
+                
+                const taskList = document.createElement('div');
+                taskList.className = 'task-list';
+                
+                group.tasks.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.className = 'task';
+                    
+                    let taskHtml = `<div class="task-text">${task.text}</div>`;
+                    
+                    if (document.getElementById('show-difficulty').checked) {
+                        taskHtml += `<span class="difficulty-tag ${task.level}">${task.level}</span>`;
+                    }
+                    
+                    taskHtml += `<span class="period-tag">${getPeriodName(task.period)}</span>`;
+                    
+                    taskHtml += `
+                        <div class="answer" style="display: ${document.getElementById('show-answers').checked ? 'block' : 'none'}">
+                            <strong>Odpowiedź:</strong> ${task.answer}
+                        </div>
+                        <div class="task-actions no-print">
+                            <button class="show-answer">Pokaż/ukryj odpowiedź</button>
+                        </div>
+                    `;
+                    
+                    taskElement.innerHTML = taskHtml;
+                    
+                    taskElement.querySelector('.show-answer').addEventListener('click', function() {
+                        const answer = this.closest('.task').querySelector('.answer');
+                        answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+                    });
+                    
+                    taskList.appendChild(taskElement);
+                });
+                
+                groupSection.appendChild(taskList);
+                output.appendChild(groupSection);
+            });
+        }
+        
+        function getPeriodName(period) {
+            const periods = {
+                ancient: 'Starożytność',
+                middleages: 'Średniowiecze',
+                renaissance: 'Renesans',
+                modern: 'Nowożytność',
+                contemporary: 'Współczesność'
+            };
+            return periods[period] || period;
+        }
+        
+        function resetTasks() {
+            if (confirm("Czy na pewno chcesz wyczyścić wszystkie zadania?")) {
+                document.getElementById('tasks-output').innerHTML = '';
+                document.getElementById('task-info').textContent = '';
+                appState.currentTasks = [];
+            }
+        }
+        
+        function printTasks() {
+            window.print();
+        }
+        
+        function exportToPDF() {
+            alert("Funkcja eksportu do PDF będzie dostępna w pełnej wersji aplikacji.");
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('tasks-output').innerHTML = '';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+        
+        function toggleAnswers() {
+            const show = this.checked;
+            document.querySelectorAll('.answer').forEach(answer => {
+                answer.style.display = show ? 'block' : 'none';
+            });
+        }
+        
+        function toggleDifficulty() {
+            const show = this.checked;
+            document.querySelectorAll('.difficulty-tag').forEach(tag => {
+                tag.style.display = show ? 'inline-block' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
